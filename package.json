@@ -1,0 +1,25 @@
+{
+  "name": "devops-calculator-api",
+  "version": "1.0.0",
+  "description": "A Calculator API for DevOps project with observability and security",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node src/app.js",
+    "test": "jest --coverage"
+  },
+  "keywords": ["calculator", "api", "devops", "express"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
