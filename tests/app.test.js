@@ -76,7 +76,7 @@ describe('Calculator API', () => {
     });
 
     it('should return error for invalid operation', async () => {
-      const res = await request(app).get('/power?a=2&b=3');
+      const res = await request(app).get('/modulo?a=2&b=3');
       expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty('error', 'Invalid operation');
     });
