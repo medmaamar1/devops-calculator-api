@@ -120,36 +120,24 @@ jobs:
       run: |
         timeout 60s bash -c 'until curl -s http://localhost:3000/health; do sleep 5; done'
     
-    - name: Install OWASP ZAP
-      run: |
-        wget -q https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2.14.0_Linux.tar.gz
-        tar -xzf ZAP_2.14.0_Linux.tar.gz
-        chmod +x ZAP_2.14.0/zap.sh
-    
     - name: Run OWASP ZAP Baseline Scan
       run: |
-        pwd
-        ls -la
-        chmod +x ZAP_2.14.0/zap.sh
+        # Use the official ZAP Docker image to run the scan
+        # --network="host" allows ZAP to reach the app container on localhost:3000
+        docker run --network="host" -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+          -t http://localhost:3000 \
+          -r zap-report.html || ZAP_EXIT_CODE=$?
         
-        # Run ZAP and capture exit code
-        ./ZAP_2.14.0/zap.sh -cmd -quickurl http://localhost:3000 -quickout zap-report.html -port 8080 || ZAP_EXIT_CODE=$?
+        echo "ZAP Exit Code: ${ZAP_EXIT_CODE:-0}"
         
-        echo "ZAP Exit Code: $ZAP_EXIT_CODE"
-        
-        # Check if report was created
-        ls -la
-        
-        # Handle Exit Code 8 (Issues Found) - Treat as warning but success for CI
-        if [ "$ZAP_EXIT_CODE" == "8" ]; then
-          echo "ZAP found security alerts (Exit Code 8). Marking as successful for CI/CD flow."
+        # Handle Exit Code 8 (Security Alerts Found) as a success for CI/CD flow
+        if [ "${ZAP_EXIT_CODE:-0}" -eq 8 ] || [ "${ZAP_EXIT_CODE:-0}" -eq 0 ]; then
+          echo "ZAP scan completed (alerts may have been found). Marking as success."
           exit 0
-        elif [ "$ZAP_EXIT_CODE" != "0" ] && [ -n "$ZAP_EXIT_CODE" ]; then
-          echo "ZAP failed with unexpected error: $ZAP_EXIT_CODE"
+        else
+          echo "ZAP failed with an unexpected error code: $ZAP_EXIT_CODE"
           exit 1
         fi
-        
-        echo "DAST scan completed successfully."
     
     - name: Upload DAST results
       uses: actions/upload-artifact@v4
