@@ -122,6 +122,9 @@ jobs:
     
     - name: Run OWASP ZAP Baseline Scan
       run: |
+        # Fix permissions so ZAP Docker can write the report
+        sudo chmod -R 777 .
+        
         # Use the official ZAP Docker image to run the scan
         # --network="host" allows ZAP to reach the app container on localhost:3000
         docker run --network="host" -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
@@ -130,7 +133,7 @@ jobs:
         
         echo "ZAP Exit Code: ${ZAP_EXIT_CODE:-0}"
         
-        # Handle Exit Code 8 (Security Alerts Found) as a success for CI/CD flow
+        # Handle Exit Code 8 (Security Alerts Found) and 0 (No Alerts) as success for CI/CD flow
         if [ "${ZAP_EXIT_CODE:-0}" -eq 8 ] || [ "${ZAP_EXIT_CODE:-0}" -eq 0 ]; then
           echo "ZAP scan completed (alerts may have been found). Marking as success."
           exit 0

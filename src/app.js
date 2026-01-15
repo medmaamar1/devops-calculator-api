@@ -30,6 +30,10 @@ const middleware = (req, res, next) => {
 
 app.use(middleware);
 
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to the DevOps Calculator API', version: '1.0.0' });
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
