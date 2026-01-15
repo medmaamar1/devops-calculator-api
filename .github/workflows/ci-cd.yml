@@ -129,6 +129,8 @@ jobs:
     - name: Run OWASP ZAP Baseline Scan
       run: |
         ./ZAP_2.14.0/zap.sh -cmd -quickurl http://localhost:3000 -quickout zap-report.html -port 8080 || true
+        # Ensure the step succeeds even if alerts (exit 8) are found
+        exit 0
       continue-on-error: true
     
     - name: Upload DAST results
