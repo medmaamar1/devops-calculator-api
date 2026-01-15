@@ -17,7 +17,7 @@ const middleware = (req, res, next) => {
   const startTime = Date.now();
   req.traceId = traceId;
   log('info', 'Incoming request', { method: req.method, path: req.path, traceId });
-  
+
   res.on('finish', () => {
     const responseTime = Date.now() - startTime;
     const path = req.path;
@@ -58,13 +58,14 @@ const calculate = (op, a, b) => {
   const numA = parseFloat(a);
   const numB = parseFloat(b);
   if (isNaN(numA) || isNaN(numB)) throw new Error('Invalid numbers');
-  switch(op) {
+  switch (op) {
     case 'add': return numA + numB;
     case 'subtract': return numA - numB;
     case 'multiply': return numA * numB;
-    case 'divide': 
+    case 'divide':
       if (numB === 0) throw new Error('Division by zero');
       return numA / numB;
+    case 'power': return Math.pow(numA, numB);
     default: throw new Error('Invalid operation');
   }
 };

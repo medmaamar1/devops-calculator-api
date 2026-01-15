@@ -50,6 +50,13 @@ describe('Calculator API', () => {
       expect(res.body.result).toBe(42);
     });
 
+    it('should calculate power of two numbers', async () => {
+      const res = await request(app).get('/power?a=2&b=3');
+      expect(res.statusCode).toBe(200);
+      expect(res.body.result).toBe(8);
+      expect(res.body.operation).toBe('power');
+    });
+
     it('should divide two numbers', async () => {
       const res = await request(app).get('/divide?a=20&b=4');
       expect(res.statusCode).toBe(200);
